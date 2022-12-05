@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 
 const Fence = () => {
-  const fullWidth = Dimensions.get('screen').width;
+  let fullWidth = Dimensions.get('screen').width;
   const verticalLines = (fullWidth / 50).toFixed();
 
   return (

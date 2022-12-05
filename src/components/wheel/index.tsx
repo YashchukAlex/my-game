@@ -12,7 +12,11 @@ import WheelSVG from '../../assets/wheel.svg';
 
 const wheelRadius = 50;
 
-export default ({ speed }) => {
+interface iProps {
+  speed: number;
+}
+
+export default ({ speed }: iProps) => {
   const rotation = useSharedValue(0);
 
   const animatedStyles = useAnimatedStyle(() => {
