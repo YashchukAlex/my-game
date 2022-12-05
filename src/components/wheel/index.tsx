@@ -18,8 +18,14 @@ interface iProps {
 
 export default ({ speed }: iProps) => {
   const rotation = useSharedValue(0);
+  const moving = useSharedValue(0);
+  const prevRotation = useSharedValue(0);
 
   const animatedStyles = useAnimatedStyle(() => {
+    let res = prevRotation.value - rotation.value;
+    res -= res * 2;
+    moving.value += (Math.PI * wheelRadius * res) / 180;
+
     if (rotation.value === 360) {
       rotation.value = 0;
       rotation.value = withTiming(360, {
@@ -27,12 +33,14 @@ export default ({ speed }: iProps) => {
         easing: Easing.linear,
       });
     }
+    prevRotation.value = rotation.value;
     return {
       transform: [
         {
           rotate: `${rotation.value}deg`,
         },
       ],
+      left: moving.value,
     };
   }, [rotation.value]);
 
