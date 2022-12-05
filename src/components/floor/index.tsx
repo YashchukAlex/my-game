@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { mapSize } from '../../constants';
 
+import { generateBackground } from '../../utils/UIGenerators';
+
 const Fence = () => {
   let fullWidth = mapSize;
   const verticalLines = (fullWidth / 50).toFixed();
+
+  const uiDecorations = useMemo(() => {
+    return generateBackground(mapSize);
+  }, []);
 
   return (
     <View style={styles.fenceContainer}>
@@ -15,6 +21,20 @@ const Fence = () => {
       {Array.from({ length: 2 }).map((el, index) => {
         const top = ++index * (styles.verticalLine.height / 3);
         return <View style={[styles.horizontalLine, { top }]} key={index} />;
+      })}
+      {uiDecorations.map((el, index) => {
+        return (
+          <View
+            style={[styles.uiElementBackground, { left: el.x }]}
+            key={index}>
+            <el.Icon
+              key={index}
+              width={el.width}
+              height={el.height}
+              fill="black"
+            />
+          </View>
+        );
       })}
     </View>
   );
@@ -36,8 +56,9 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   floor: {
-    height: 10,
+    height: 30,
     backgroundColor: 'gray',
+    zIndex: 999,
   },
   //Fence
   fenceContainer: {
@@ -49,11 +70,18 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     backgroundColor: 'brown',
+    zIndex: 10,
   },
   verticalLine: {
     height: 50,
     width: 3,
     backgroundColor: 'brown',
+    zIndex: 10,
     // transform: [{ rotate: '10deg' }],
+  },
+  uiElementBackground: {
+    position: 'absolute',
+    bottom: -50,
+    backgroundColor: 'transparent',
   },
 });

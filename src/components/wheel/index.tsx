@@ -10,7 +10,7 @@ import Animated, {
 
 import WheelSVG from '../../assets/wheel.svg';
 
-const wheelRadius = 50;
+const wheelRadius = 30;
 
 interface iProps {
   speed: number;
