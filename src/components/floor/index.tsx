@@ -1,8 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import { mapSize } from '../../constants';
 
 const Fence = () => {
-  let fullWidth = Dimensions.get('screen').width;
+  let fullWidth = mapSize;
   const verticalLines = (fullWidth / 50).toFixed();
 
   return (
@@ -29,7 +31,7 @@ export default () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: mapSize,
     position: 'absolute',
     bottom: 0,
   },
@@ -52,6 +54,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: 3,
     backgroundColor: 'brown',
-    //transform: [{ rotate: '10deg' }],
+    // transform: [{ rotate: '10deg' }],
   },
 });

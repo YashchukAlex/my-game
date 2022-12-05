@@ -14,9 +14,10 @@ const wheelRadius = 50;
 
 interface iProps {
   speed: number;
+  mapMoving: any;
 }
 
-export default ({ speed }: iProps) => {
+export default ({ speed, mapMoving }: iProps) => {
   const rotation = useSharedValue(0);
   const moving = useSharedValue(0);
   const prevRotation = useSharedValue(0);
@@ -33,7 +34,11 @@ export default ({ speed }: iProps) => {
         easing: Easing.linear,
       });
     }
+
     prevRotation.value = rotation.value;
+
+    mapMoving.value = moving.value;
+
     return {
       transform: [
         {
