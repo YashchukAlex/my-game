@@ -1,8 +1,14 @@
 import Tree1 from '../assets/tree-1.svg';
 import Tree2 from '../assets/tree-2.svg';
 import Tree3 from '../assets/tree-3.svg';
+import Tree4 from '../assets/tree-4.svg';
+import Tree5 from '../assets/tree-5.svg';
+import Tree6 from '../assets/tree-6.svg';
+import Tree7 from '../assets/tree-7.svg';
+import Tree8 from '../assets/tree-8.svg';
+import Tree9 from '../assets/tree-9.svg';
 
-const trees = [Tree1, Tree2, Tree3];
+const trees = [Tree1, Tree2, Tree3, Tree4, Tree5, Tree6, Tree7, Tree8, Tree9];
 
 interface IBackground {
   x: number;
@@ -32,7 +38,7 @@ export const generateBackground = (mapSize: number): Array<IBackground> => {
         height: 300,
       });
     }
-    a += 100;
+    a += 80;
   }
   return area;
 };
