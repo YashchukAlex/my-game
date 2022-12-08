@@ -33,7 +33,7 @@ export const generateBackground = (mapSize: number): Array<IBackground> => {
       area.push({
         x: a,
         y: 0,
-        Icon: trees[parseInt(getRandomArbitrary(0, trees.length))],
+        Icon: trees[Math.trunc(getRandomArbitrary(0, trees.length))],
         width: 150,
         height: 300,
       });

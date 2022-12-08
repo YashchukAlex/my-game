@@ -9,12 +9,7 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
+import { SafeAreaView, StatusBar, useColorScheme } from 'react-native';
 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
@@ -39,6 +34,6 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});
 
 export default App;

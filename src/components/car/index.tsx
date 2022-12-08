@@ -52,7 +52,7 @@ export default ({ speed, mapMoving }: iProps) => {
       }, frameDelay);
       return () => clearInterval(interval);
     }
-  }, [speed]);
+  }, [speed, moving, rotation]);
 
   const animatedStylesWheelLeft = useAnimatedStyle(() => {
     return {
