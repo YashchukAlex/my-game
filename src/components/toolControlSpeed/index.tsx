@@ -1,7 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 
-export default ({ value, changeSpeed }) => {
+interface IProps {
+  changeSpeed: Function;
+}
+
+export default ({ changeSpeed }: IProps) => {
   return (
     <View style={styles.container}>
       {speed.map((el, index) => (
@@ -32,7 +36,7 @@ const styles = StyleSheet.create({
 
 const speed = [
   { speed: 0, color: 'white' },
-  { speed: 5000, color: '#4ea832' },
-  { speed: 2500, color: '#a88d32' },
-  { speed: 1000, color: '#a83232' },
+  { speed: 10, color: '#4ea832' },
+  { speed: 50, color: '#a88d32' },
+  { speed: 200, color: '#a83232' },
 ];

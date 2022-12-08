@@ -6,7 +6,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import Floor from '../components/floor/index';
-import Wheel from '../components/wheel';
+import Wheel from '../components/car';
 import ToolControlSpeed from '../components/toolControlSpeed';
 
 export default () => {
