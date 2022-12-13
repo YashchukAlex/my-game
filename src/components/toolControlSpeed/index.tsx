@@ -22,7 +22,7 @@ export default ({ changeSpeed }: IProps) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    right: 20,
+    right: 40,
     top: 20,
     zIndex: 999,
     borderWidth: 1,

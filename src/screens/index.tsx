@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -6,12 +6,19 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import Floor from '../components/floor/index';
-import Wheel from '../components/car';
+import Car from '../components/car';
 import ToolControlSpeed from '../components/toolControlSpeed';
 
+import { Car as CarType, Wheel } from '../engine/entities';
+import { loop } from '../engine';
+import { frameDelay } from '../constants';
+
 export default () => {
-  const [speed, setSpeed] = useState<number>(0);
+  const [carSpeed, setCarSpeed] = useState<number>(0);
   const mapMoving = useSharedValue(0);
+  const carMoving = useSharedValue<CarType>(
+    new CarType({ x: 0, y: 0 }, 0, new Wheel(0)),
+  );
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -23,11 +30,21 @@ export default () => {
     };
   }, [mapMoving]);
 
+  useEffect(() => {
+    carMoving.value.speed = carSpeed;
+    if (carMoving.value.speed) {
+      const interval = setInterval(function tick() {
+        loop(carMoving, mapMoving);
+      }, frameDelay);
+      return () => clearInterval(interval);
+    }
+  }, [carSpeed, mapMoving, carMoving]);
+
   return (
     <>
-      <ToolControlSpeed value={speed} changeSpeed={setSpeed} />
+      <ToolControlSpeed changeSpeed={setCarSpeed} />
       <Animated.View style={[styles.container, animatedStyles]}>
-        <Wheel speed={speed} mapMoving={mapMoving} />
+        <Car carMoving={carMoving} />
         <Floor />
       </Animated.View>
     </>

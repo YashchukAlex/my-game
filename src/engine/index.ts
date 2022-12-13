@@ -1,76 +1,38 @@
-// import { frameRate } from '../constants';
+import { carWidth } from './../components/car/index';
+import { SharedValue } from 'react-native-reanimated';
+import { wheelRadius } from '../components/car';
+import { mapSize } from '../constants';
 
-// let ball1 = {
-//     position: { x: 0, y: 275 },
-//     velocity: { x: 0, y: 0 },
-//     mass: 0.1, //kg
-//     radius: wheelRadius / 2, // 1px = 1cm
-//     restitution: -0.7,
-//   };
+import { Car } from './entities';
 
-// var Cd = 0.47; // is the "coefficient of drag", which is influenced by the shape of the object (and a little bit by its material)
-// var rho = 1.22; // (kg / m^3) density of the fluid the ball is in
-// var A = (Math.PI * ball1.radius * ball1.radius) / 10000; // (m^2) frontal area or frontal projection of the object
-// var ag = 9.81; //m / s^2
+const pixelsByOneDeg = (Math.PI * wheelRadius * 1) / 180;
 
-// export const loop = function (moving) {
-//   const ball = JSON.parse(JSON.stringify(moving.value));
+export const loop = (
+  carMoving: SharedValue<Car>,
+  mapMoving: SharedValue<number>,
+) => {
+  const carMovingValue: Car = JSON.parse(JSON.stringify(carMoving.value));
+  const newCarPosition = {
+    x: carMovingValue.position.x + carMovingValue.speed / 20,
+    y: carMovingValue.position.y,
+  };
 
-//   // Do physics
-//   // Drag force: Fd = -1/2 * Cd * A * rho * v * v
+  const newRotationWheelValue =
+    (newCarPosition.x - carMovingValue.position.x) / pixelsByOneDeg +
+    carMovingValue.wheel.rotation;
 
-//   //Aerodynamic Drag
-//   var Fx =
-//     (-0.5 *
-//       Cd *
-//       A *
-//       rho *
-//       ball.velocity.x *
-//       ball.velocity.x *
-//       ball.velocity.x) /
-//     Math.abs(ball.velocity.x);
-//   var Fy =
-//     (-0.5 *
-//       Cd *
-//       A *
-//       rho *
-//       ball.velocity.y *
-//       ball.velocity.y *
-//       ball.velocity.y) /
-//     Math.abs(ball.velocity.y);
+  carMovingValue.position = newCarPosition;
 
-//   Fx = isNaN(Fx) ? 0 : Fx;
-//   Fy = isNaN(Fy) ? 0 : Fy;
+  if (newRotationWheelValue > 360) {
+    carMovingValue.wheel.rotation = newRotationWheelValue - 360;
+  } else {
+    carMovingValue.wheel.rotation = newRotationWheelValue;
+  }
 
-//   // Calculate acceleration ( F = ma )
-//   var ax = Fx / ball.mass;
-//   var ay = ag + Fy / ball.mass;
-//   // Integrate to get velocity
-//   ball.velocity.x += ax * frameRate;
-//   ball.velocity.y += ay * frameRate;
-
-//   // Integrate to get position
-//   ball.position.x += ball.velocity.x * frameRate * 100;
-//   ball.position.y += ball.velocity.y * frameRate * 100;
-
-//   // Handle collisions
-//   if (ball.position.y > 330 - ball.radius) {
-//     //console.log('collisions1');
-//     ball.velocity.y *= ball.restitution;
-//     ball.position.y = 330 - ball.radius;
-//   }
-//   if (ball.position.x > 500 - ball.radius) {
-//     //console.log('collisions2');
-//     ball.velocity.x *= ball.restitution;
-//     ball.position.x = 500 - ball.radius;
-//   }
-//   if (ball.position.x < ball.radius) {
-//     //console.log('collisions3');
-//     ball.velocity.x *= ball.restitution;
-//     ball.position.x = ball.radius;
-//   }
-
-//   moving.value = ball;
-// };
-
-//https://burakkanber.com/blog/modeling-physics-javascript-gravity-and-drag/
+  //check collision
+  if (carMovingValue.position.x > mapSize - carWidth) {
+    return;
+  }
+  carMoving.value = carMovingValue;
+  mapMoving.value = carMovingValue.position.x;
+};
