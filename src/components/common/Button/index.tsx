@@ -1,7 +1,7 @@
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, PressableProps } from 'react-native';
 
-export default (props: any) => {
+export default (props: PressableProps) => {
   const pressableOpacity = (pressed: Boolean) => [
     { opacity: pressed ? 0.5 : null },
     props.style,

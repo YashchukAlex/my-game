@@ -1,42 +1,91 @@
 import React from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet } from 'react-native';
+
+import Button from '../common/Button';
+
+import BrakePedalSVG from '../../assets/brake-pedal.svg';
 
 interface IProps {
-  changeSpeed: Function;
+  movingStatus: ToolControlSpeedStatus;
+  changeMovingStatus: Function;
 }
 
-export default ({ changeSpeed }: IProps) => {
+export enum ToolControlSpeedStatus {
+  MOVING_FORWARD,
+  MOVING_BACK,
+  NOT_USING,
+}
+
+enum ToolButtonType {
+  GAS,
+  BRAKE,
+}
+
+enum EventType {
+  ON_PRESS_IN,
+  ON_PRESS_OUT,
+}
+
+const activeButtons: Array<ToolButtonType> = [];
+
+export default ({ changeMovingStatus, movingStatus }: IProps) => {
+  const handleChange = (buttonType: ToolButtonType, eventType: EventType) => {
+    if (movingStatus === ToolControlSpeedStatus.NOT_USING) {
+      buttonType === ToolButtonType.GAS
+        ? changeMovingStatus(ToolControlSpeedStatus.MOVING_FORWARD)
+        : changeMovingStatus(ToolControlSpeedStatus.MOVING_BACK);
+    } else {
+      if (eventType === EventType.ON_PRESS_IN) {
+        activeButtons.push(buttonType);
+        if (buttonType === ToolButtonType.BRAKE) {
+          changeMovingStatus(ToolControlSpeedStatus.MOVING_BACK);
+        }
+      } else {
+        activeButtons.filter((el: ToolButtonType) => el !== buttonType);
+        if (activeButtons.length) {
+          buttonType === ToolButtonType.GAS
+            ? changeMovingStatus(ToolControlSpeedStatus.MOVING_FORWARD)
+            : changeMovingStatus(ToolControlSpeedStatus.MOVING_BACK);
+        } else {
+          changeMovingStatus(ToolControlSpeedStatus.NOT_USING);
+        }
+      }
+    }
+  };
   return (
-    <View style={styles.container}>
-      {speed.map((el, index) => (
-        <TouchableWithoutFeedback
-          onPress={() => changeSpeed(el.speed)}
-          key={index}>
-          <View style={[styles.cell, { backgroundColor: el.color }]} />
-        </TouchableWithoutFeedback>
-      ))}
-    </View>
+    <>
+      <Button
+        style={[styles.pedal, styles.brakePedal]}
+        onPressIn={() =>
+          handleChange(ToolButtonType.BRAKE, EventType.ON_PRESS_IN)
+        }
+        onPressOut={() =>
+          handleChange(ToolButtonType.BRAKE, EventType.ON_PRESS_OUT)
+        }
+        key={ToolButtonType.BRAKE}>
+        <BrakePedalSVG width={50} height={100} fill={'#000000'} />
+      </Button>
+      <Button
+        style={[styles.pedal, styles.gasPedal]}
+        onPressIn={() =>
+          handleChange(ToolButtonType.GAS, EventType.ON_PRESS_IN)
+        }
+        onPressOut={() =>
+          handleChange(ToolButtonType.GAS, EventType.ON_PRESS_OUT)
+        }
+        key={ToolButtonType.GAS}>
+        <BrakePedalSVG width={50} height={100} fill={'#000000'} />
+      </Button>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  pedal: {
     position: 'absolute',
-    right: 40,
-    top: 20,
+    bottom: 20,
     zIndex: 999,
-    borderWidth: 1,
-    borderColor: 'gray',
   },
-  cell: {
-    width: 20,
-    height: 50,
-  },
+  gasPedal: { right: 40 },
+  brakePedal: { left: 40 },
 });
-
-const speed = [
-  { speed: 0, color: 'white' },
-  { speed: 10, color: '#4ea832' },
-  { speed: 50, color: '#a88d32' },
-  { speed: 200, color: '#a83232' },
-];
