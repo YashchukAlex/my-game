@@ -1,11 +1,6 @@
 //libraries
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,21 +9,24 @@ import Animated, {
 //components
 import Floor from '../components/floor/index';
 import Car from '../components/car';
-import ToolControlSpeed from '../components/toolControlSpeed';
+import ToolControlSpeed, {
+  ToolControlSpeedStatus,
+} from '../components/toolControlSpeed';
 
 //utils
 import { Car as CarType, Wheel } from '../engine/entities';
 import { loop } from '../engine';
-import { frameDelay } from '../constants';
+import { cameraPosition, frameDelay } from '../constants';
 
 //assets
-import RefreshSVG from '../assets/refresh';
+import RefreshSVG from '../assets/refresh.svg';
 
 export default () => {
-  const [carSpeed, setCarSpeed] = useState<number>(0);
-  const mapMoving = useSharedValue(0);
+  const [carMovingToolsStatus, setCarMovingToolsStatus] =
+    useState<ToolControlSpeedStatus>(ToolControlSpeedStatus.NOT_USING);
+  const mapMoving = useSharedValue(cameraPosition);
   const carMoving = useSharedValue<CarType>(
-    new CarType({ x: 0, y: 0 }, 0, new Wheel(0)),
+    new CarType({ x: cameraPosition, y: 0 }, 0, new Wheel(0)),
   );
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -42,21 +40,29 @@ export default () => {
   }, [mapMoving]);
 
   useEffect(() => {
-    carMoving.value.speed = carSpeed;
-    if (carMoving.value.speed) {
-      const interval = setInterval(function tick() {
-        loop(carMoving, mapMoving);
-      }, frameDelay);
-      return () => clearInterval(interval);
+    const interval = setInterval(function tick() {
+      loop(carMoving, mapMoving);
+    }, frameDelay);
+    return () => clearInterval(interval);
+  }, [mapMoving, carMoving]);
+
+  useEffect(() => {
+    if (carMovingToolsStatus === ToolControlSpeedStatus.MOVING_FORWARD) {
+      carMoving.value.speed = 100;
+    } else if (carMovingToolsStatus === ToolControlSpeedStatus.MOVING_BACK) {
+      carMoving.value.speed = -100;
+    } else {
+      carMoving.value.speed = 0;
     }
-  }, [carSpeed, mapMoving, carMoving]);
+  }, [carMoving, carMovingToolsStatus]);
 
   const refreshGame = () => {
-    mapMoving.value = 0;
+    mapMoving.value = cameraPosition;
     const newCarValue: CarType = JSON.parse(JSON.stringify(carMoving.value));
-    newCarValue.position.x = 0;
+    newCarValue.position = { x: cameraPosition, y: 0 };
+    newCarValue.speed = 0;
     carMoving.value = newCarValue;
-    setCarSpeed(0);
+    setCarMovingToolsStatus(ToolControlSpeedStatus.NOT_USING);
   };
 
   return (
@@ -64,7 +70,10 @@ export default () => {
       <TouchableOpacity onPress={refreshGame} style={styles.refreshButton}>
         <RefreshSVG width={35} height={35} />
       </TouchableOpacity>
-      <ToolControlSpeed changeSpeed={setCarSpeed} />
+      <ToolControlSpeed
+        movingStatus={carMovingToolsStatus}
+        changeMovingStatus={setCarMovingToolsStatus}
+      />
       <Animated.View style={[styles.container, animatedStyles]}>
         <Car carMoving={carMoving} />
         <Floor />

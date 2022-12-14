@@ -1,8 +1,9 @@
-import { carWidth } from './../components/car/index';
 import { SharedValue } from 'react-native-reanimated';
-import { wheelRadius } from '../components/car';
-import { mapSize } from '../constants';
 
+import { carWidth } from './../components/car/index';
+import { wheelRadius } from '../components/car';
+
+import { cameraPosition, mapSize } from '../constants';
 import { Car } from './entities';
 
 const pixelsByOneDeg = (Math.PI * wheelRadius * 1) / 180;
@@ -33,6 +34,10 @@ export const loop = (
   if (carMovingValue.position.x > mapSize - carWidth) {
     return;
   }
+
+  if (carMovingValue.position.x < 0) {
+    return;
+  }
   carMoving.value = carMovingValue;
-  mapMoving.value = carMovingValue.position.x;
+  mapMoving.value = carMovingValue.position.x - cameraPosition;
 };
