@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   SharedValue,
@@ -7,14 +7,11 @@ import Animated, {
 
 import WheelSVG from '../../assets/wheel.svg';
 import CarSVG from '../../assets/car.svg';
-import { Car } from '../../engine/entities';
+import { ICar } from '../../models/car';
 
-export const carWidth = 200;
-export const wheelRadius = 16;
-const wheelPositionLeft = carWidth * 0.14;
-const wheelPositionRight = carWidth * 0.773;
+import { carWidth, carHeight, wheelRadius } from '../../constants';
 interface iProps {
-  carMoving: SharedValue<Car>;
+  carMoving: SharedValue<ICar>;
 }
 
 export default ({ carMoving }: iProps) => {
@@ -22,10 +19,11 @@ export default ({ carMoving }: iProps) => {
     return {
       transform: [
         {
-          rotate: `${carMoving.value.wheel.rotation}deg`,
+          rotate: `${carMoving.value.wheels[0].rotation}deg`,
         },
       ],
-      left: carMoving.value.position.x + wheelPositionLeft,
+      left: carMoving.value.wheels[0].position.x,
+      bottom: carMoving.value.wheels[0].position.y,
     };
   }, [carMoving.value]);
 
@@ -33,39 +31,35 @@ export default ({ carMoving }: iProps) => {
     return {
       transform: [
         {
-          rotate: `${carMoving.value.wheel.rotation}deg`,
+          rotate: `${carMoving.value.wheels[1].rotation}deg`,
         },
       ],
-      left: carMoving.value.position.x + wheelPositionRight,
+      left: carMoving.value.wheels[1].position.x,
+      bottom: carMoving.value.wheels[1].position.y,
     };
   }, [carMoving.value]);
 
   const animatedStylesCar = useAnimatedStyle(() => {
     return {
       left: carMoving.value.position.x,
+      bottom: carMoving.value.position.y,
     };
   }, [carMoving.value]);
 
+  const wheelSize = wheelRadius * 2;
+
   return (
-    <>
-      <Animated.View style={[styles.car, animatedStylesCar]}>
-        <CarSVG width={carWidth} height={carWidth / 2} />
-      </Animated.View>
-      <Animated.View style={[styles.wheel, animatedStylesWheelLeft]}>
-        <WheelSVG
-          width={wheelRadius * 2}
-          height={wheelRadius * 2}
-          fill={'black'}
-        />
-      </Animated.View>
-      <Animated.View style={[styles.wheel, animatedStylesWheelRight]}>
-        <WheelSVG
-          width={wheelRadius * 2}
-          height={wheelRadius * 2}
-          fill={'black'}
-        />
-      </Animated.View>
-    </>
+    <Animated.View style={[styles.car, animatedStylesCar]}>
+      <View>
+        <CarSVG width={carWidth} height={carHeight} />
+        <Animated.View style={[styles.wheel, animatedStylesWheelLeft]}>
+          <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
+        </Animated.View>
+        <Animated.View style={[styles.wheel, animatedStylesWheelRight]}>
+          <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
+        </Animated.View>
+      </View>
+    </Animated.View>
   );
 };
 
@@ -73,14 +67,12 @@ const styles = StyleSheet.create({
   car: {
     position: 'absolute',
     backgroundColor: 'transparent',
-    bottom: -15,
     zIndex: 2,
   },
   wheel: {
     position: 'absolute',
     backgroundColor: 'white',
-    borderRadius: wheelRadius * 2,
-    bottom: 9,
+    borderRadius: wheelRadius,
     zIndex: 1,
   },
 });

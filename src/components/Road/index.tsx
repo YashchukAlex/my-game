@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { mapSize } from '../../constants';
+import { mapSize, roadHeight } from '../../constants';
 
-import { generateBackground } from '../../utils/UIGenerators';
+import { generateBackground } from '../../helpers/UIGenerators';
 
 const Fence = () => {
   let fullWidth = mapSize;
@@ -44,7 +44,7 @@ export default () => {
   return (
     <View style={styles.container}>
       <Fence />
-      <View style={styles.floor} />
+      <View style={styles.road} />
     </View>
   );
 };
@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
   },
-  floor: {
-    height: 30,
+  road: {
+    height: roadHeight,
     backgroundColor: 'gray',
     zIndex: 999,
   },

@@ -1,34 +1,35 @@
 import { SharedValue } from 'react-native-reanimated';
 
-import { carWidth } from './../components/car/index';
-import { wheelRadius } from '../components/car';
+import { carWidth, wheelRadius } from '../constants';
 
 import { cameraPosition, mapSize } from '../constants';
-import { Car } from './entities';
+import { ICar, IWheel } from '../models/car';
 
 const pixelsByOneDeg = (Math.PI * wheelRadius * 1) / 180;
 
 export const loop = (
-  carMoving: SharedValue<Car>,
+  carMoving: SharedValue<ICar>,
   mapMoving: SharedValue<number>,
 ) => {
-  const carMovingValue: Car = JSON.parse(JSON.stringify(carMoving.value));
+  const carMovingValue: ICar = JSON.parse(JSON.stringify(carMoving.value));
   const newCarPosition = {
     x: carMovingValue.position.x + carMovingValue.speed / 20,
     y: carMovingValue.position.y,
   };
 
-  const newRotationWheelValue =
-    (newCarPosition.x - carMovingValue.position.x) / pixelsByOneDeg +
-    carMovingValue.wheel.rotation;
+  carMovingValue.wheels.forEach((wheel: IWheel) => {
+    const newRotationWheelValue =
+      (newCarPosition.x - carMovingValue.position.x) / pixelsByOneDeg +
+      wheel.rotation;
+
+    if (newRotationWheelValue > 360) {
+      wheel.rotation = newRotationWheelValue - 360;
+    } else {
+      wheel.rotation = newRotationWheelValue;
+    }
+  });
 
   carMovingValue.position = newCarPosition;
-
-  if (newRotationWheelValue > 360) {
-    carMovingValue.wheel.rotation = newRotationWheelValue - 360;
-  } else {
-    carMovingValue.wheel.rotation = newRotationWheelValue;
-  }
 
   //check collision
   if (carMovingValue.position.x > mapSize - carWidth) {

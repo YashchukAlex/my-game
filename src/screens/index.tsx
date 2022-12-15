@@ -7,27 +7,38 @@ import Animated, {
 } from 'react-native-reanimated';
 
 //components
-import Floor from '../components/floor/index';
-import Car from '../components/car';
-import ToolControlSpeed, {
-  ToolControlSpeedStatus,
-} from '../components/toolControlSpeed';
+import Road from '../components/Road';
+import Car from '../components/Car';
+import CarPedals from '../components/CarPedals';
 
 //utils
-import { Car as CarType, Wheel } from '../engine/entities';
+import { ICar } from '../models/car';
 import { loop } from '../engine';
-import { cameraPosition, frameDelay } from '../constants';
+import {
+  cameraPosition,
+  frameDelay,
+  leftWheelPosition,
+  rightWheelPosition,
+  carSpeed,
+  carPosition,
+} from '../constants';
 
 //assets
 import RefreshSVG from '../assets/refresh.svg';
+import { ControlMoveCar } from '../models/carTools';
 
 export default () => {
   const [carMovingToolsStatus, setCarMovingToolsStatus] =
-    useState<ToolControlSpeedStatus>(ToolControlSpeedStatus.NOT_USING);
+    useState<ControlMoveCar>(ControlMoveCar.NOT_USING);
   const mapMoving = useSharedValue(cameraPosition);
-  const carMoving = useSharedValue<CarType>(
-    new CarType({ x: cameraPosition, y: 0 }, 0, new Wheel(0)),
-  );
+  const carMoving = useSharedValue<ICar>({
+    position: carPosition,
+    speed: 0,
+    wheels: [
+      { position: leftWheelPosition, rotation: 0 },
+      { position: rightWheelPosition, rotation: 0 },
+    ],
+  });
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -47,10 +58,10 @@ export default () => {
   }, [mapMoving, carMoving]);
 
   useEffect(() => {
-    if (carMovingToolsStatus === ToolControlSpeedStatus.MOVING_FORWARD) {
-      carMoving.value.speed = 100;
-    } else if (carMovingToolsStatus === ToolControlSpeedStatus.MOVING_BACK) {
-      carMoving.value.speed = -100;
+    if (carMovingToolsStatus === ControlMoveCar.MOVING_FORWARD) {
+      carMoving.value.speed = carSpeed;
+    } else if (carMovingToolsStatus === ControlMoveCar.MOVING_BACK) {
+      carMoving.value.speed = -carSpeed;
     } else {
       carMoving.value.speed = 0;
     }
@@ -58,11 +69,15 @@ export default () => {
 
   const refreshGame = () => {
     mapMoving.value = cameraPosition;
-    const newCarValue: CarType = JSON.parse(JSON.stringify(carMoving.value));
-    newCarValue.position = { x: cameraPosition, y: 0 };
+    const newCarValue: ICar = JSON.parse(JSON.stringify(carMoving.value));
+    newCarValue.position = carPosition;
     newCarValue.speed = 0;
+    newCarValue.wheels = [
+      { position: leftWheelPosition, rotation: 0 },
+      { position: rightWheelPosition, rotation: 0 },
+    ];
     carMoving.value = newCarValue;
-    setCarMovingToolsStatus(ToolControlSpeedStatus.NOT_USING);
+    setCarMovingToolsStatus(ControlMoveCar.NOT_USING);
   };
 
   return (
@@ -70,13 +85,13 @@ export default () => {
       <TouchableOpacity onPress={refreshGame} style={styles.refreshButton}>
         <RefreshSVG width={35} height={35} />
       </TouchableOpacity>
-      <ToolControlSpeed
+      <CarPedals
         movingStatus={carMovingToolsStatus}
         changeMovingStatus={setCarMovingToolsStatus}
       />
       <Animated.View style={[styles.container, animatedStyles]}>
         <Car carMoving={carMoving} />
-        <Floor />
+        <Road />
       </Animated.View>
     </>
   );
