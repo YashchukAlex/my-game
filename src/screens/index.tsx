@@ -13,10 +13,9 @@ import CarPedals from '../components/CarPedals';
 
 //utils
 import { ICar } from '../models/car';
-import { loop } from '../engine';
+import Engine from '../engine';
 import {
   cameraPosition,
-  frameDelay,
   leftWheelPosition,
   rightWheelPosition,
   carSpeed,
@@ -51,13 +50,6 @@ export default () => {
   }, [mapMoving]);
 
   useEffect(() => {
-    const interval = setInterval(function tick() {
-      loop(carMoving, mapMoving);
-    }, frameDelay);
-    return () => clearInterval(interval);
-  }, [mapMoving, carMoving]);
-
-  useEffect(() => {
     const newCarValue = JSON.parse(JSON.stringify(carMoving.value));
     if (carMovingToolsStatus === ControlMoveCar.MOVING_FORWARD) {
       newCarValue.speed = carSpeed;
@@ -84,6 +76,7 @@ export default () => {
 
   return (
     <>
+      <Engine carMoving={carMoving} mapMoving={mapMoving} />
       <TouchableOpacity onPress={refreshGame} style={styles.refreshButton}>
         <RefreshSVG width={35} height={35} />
       </TouchableOpacity>

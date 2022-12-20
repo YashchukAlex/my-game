@@ -1,29 +1,43 @@
+import { useCallback, useEffect } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
-import { cameraPosition } from '../constants';
+import { cameraPosition, frameDelay } from '../constants';
 import { ICar } from '../models/car';
 import { checkCollisions } from './collisions';
 import { settingNewWheelsRadius } from '../helpers/car';
 
-export const loop = (
-  carMoving: SharedValue<ICar>,
-  mapMoving: SharedValue<number>,
-) => {
-  const carMovingValue: ICar = JSON.parse(JSON.stringify(carMoving.value));
-  const newCarPosition = {
-    x: carMovingValue.position.x + carMovingValue.speed / 20,
-    y: carMovingValue.position.y,
-  };
+interface IProps {
+  carMoving: SharedValue<ICar>;
+  mapMoving: SharedValue<number>;
+}
 
-  settingNewWheelsRadius(carMovingValue, newCarPosition);
+export default ({ carMoving, mapMoving }: IProps): null => {
+  const loop = useCallback(() => {
+    const carMovingValue: ICar = JSON.parse(JSON.stringify(carMoving.value));
+    const newCarPosition = {
+      x: carMovingValue.position.x + carMovingValue.speed / 20,
+      y: carMovingValue.position.y,
+    };
 
-  carMovingValue.position = newCarPosition;
+    settingNewWheelsRadius(carMovingValue, newCarPosition);
 
-  //check collision
-  if (checkCollisions(carMovingValue.position)) {
-    return;
-  }
+    carMovingValue.position = newCarPosition;
 
-  carMoving.value = carMovingValue;
-  mapMoving.value = carMovingValue.position.x - cameraPosition;
+    //check collision
+    if (checkCollisions(carMovingValue.position)) {
+      return;
+    }
+
+    carMoving.value = carMovingValue;
+    mapMoving.value = carMovingValue.position.x - cameraPosition;
+  }, [carMoving, mapMoving]);
+
+  useEffect(() => {
+    const interval = setInterval(function tick() {
+      loop();
+    }, frameDelay);
+    return () => clearInterval(interval);
+  }, [loop]);
+
+  return null;
 };
