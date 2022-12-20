@@ -4,6 +4,7 @@ import { carWidth, wheelRadius } from '../constants';
 
 import { cameraPosition, mapSize } from '../constants';
 import { ICar, IWheel } from '../models/car';
+import { checkCollisions } from './collisions';
 
 const pixelsByOneDeg = (Math.PI * wheelRadius * 1) / 180;
 
@@ -32,13 +33,10 @@ export const loop = (
   carMovingValue.position = newCarPosition;
 
   //check collision
-  if (carMovingValue.position.x > mapSize - carWidth) {
+  if (checkCollisions(carMovingValue.position)) {
     return;
   }
 
-  if (carMovingValue.position.x < 0) {
-    return;
-  }
   carMoving.value = carMovingValue;
   mapMoving.value = carMovingValue.position.x - cameraPosition;
 };
