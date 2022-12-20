@@ -1,7 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-
-import Button from '../common/Button';
+import { StyleSheet, View } from 'react-native';
 
 import BrakePedalSVG from '../../assets/brake-pedal.svg';
 import {
@@ -9,62 +7,50 @@ import {
   CarPedalEventType,
   ControlMoveCar,
 } from '../../models/carTools';
+import { getCarMovingToolsStatus } from '../../helpers/car';
 
 interface IProps {
   movingStatus: ControlMoveCar;
   changeMovingStatus: Function;
 }
 
-const activeButtons: Array<CarPedal> = [];
+let activeButtons: Array<CarPedal> = [];
 
-export default ({ changeMovingStatus, movingStatus }: IProps) => {
+export default ({ changeMovingStatus }: IProps) => {
   const handleChange = (buttonType: CarPedal, eventType: CarPedalEventType) => {
-    if (movingStatus === ControlMoveCar.NOT_USING) {
-      buttonType === CarPedal.GAS
-        ? changeMovingStatus(ControlMoveCar.MOVING_FORWARD)
-        : changeMovingStatus(ControlMoveCar.MOVING_BACK);
-    } else {
-      if (eventType === CarPedalEventType.ON_PRESS_IN) {
+    if (eventType === CarPedalEventType.ON_PRESS_IN) {
+      if (activeButtons.findIndex(el => el === buttonType) === -1) {
         activeButtons.push(buttonType);
-        if (buttonType === CarPedal.BRAKE) {
-          changeMovingStatus(ControlMoveCar.MOVING_BACK);
-        }
-      } else {
-        activeButtons.filter((el: CarPedal) => el !== buttonType);
-        if (activeButtons.length) {
-          buttonType === CarPedal.GAS
-            ? changeMovingStatus(ControlMoveCar.MOVING_FORWARD)
-            : changeMovingStatus(ControlMoveCar.MOVING_BACK);
-        } else {
-          changeMovingStatus(ControlMoveCar.NOT_USING);
-        }
       }
+    } else {
+      activeButtons = activeButtons.filter((el: CarPedal) => el !== buttonType);
     }
+    changeMovingStatus(getCarMovingToolsStatus(activeButtons));
   };
   return (
     <>
-      <Button
+      <View
         style={[styles.pedal, styles.brakePedal]}
-        onPressIn={() =>
+        onTouchStart={() =>
           handleChange(CarPedal.BRAKE, CarPedalEventType.ON_PRESS_IN)
         }
-        onPressOut={() =>
+        onTouchEnd={() =>
           handleChange(CarPedal.BRAKE, CarPedalEventType.ON_PRESS_OUT)
         }
         key={CarPedal.BRAKE}>
         <BrakePedalSVG width={50} height={100} fill={'#000000'} />
-      </Button>
-      <Button
+      </View>
+      <View
         style={[styles.pedal, styles.gasPedal]}
-        onPressIn={() =>
+        onTouchStart={() =>
           handleChange(CarPedal.GAS, CarPedalEventType.ON_PRESS_IN)
         }
-        onPressOut={() =>
+        onTouchEnd={() =>
           handleChange(CarPedal.GAS, CarPedalEventType.ON_PRESS_OUT)
         }
         key={CarPedal.GAS}>
         <BrakePedalSVG width={50} height={100} fill={'#000000'} />
-      </Button>
+      </View>
     </>
   );
 };

@@ -50,15 +50,13 @@ export default ({ carMoving }: iProps) => {
 
   return (
     <Animated.View style={[styles.car, animatedStylesCar]}>
-      <View>
-        <CarSVG width={carWidth} height={carHeight} />
-        <Animated.View style={[styles.wheel, animatedStylesWheelLeft]}>
-          <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
-        </Animated.View>
-        <Animated.View style={[styles.wheel, animatedStylesWheelRight]}>
-          <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
-        </Animated.View>
-      </View>
+      <CarSVG width={carWidth} height={carHeight} />
+      <Animated.View style={[styles.wheel, animatedStylesWheelLeft]}>
+        <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
+      </Animated.View>
+      <Animated.View style={[styles.wheel, animatedStylesWheelRight]}>
+        <WheelSVG width={wheelSize} height={wheelSize} fill={'black'} />
+      </Animated.View>
     </Animated.View>
   );
 };

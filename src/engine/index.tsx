@@ -1,12 +1,9 @@
 import { SharedValue } from 'react-native-reanimated';
 
-import { carWidth, wheelRadius } from '../constants';
-
-import { cameraPosition, mapSize } from '../constants';
-import { ICar, IWheel } from '../models/car';
+import { cameraPosition } from '../constants';
+import { ICar } from '../models/car';
 import { checkCollisions } from './collisions';
-
-const pixelsByOneDeg = (Math.PI * wheelRadius * 1) / 180;
+import { settingNewWheelsRadius } from '../helpers/car';
 
 export const loop = (
   carMoving: SharedValue<ICar>,
@@ -18,17 +15,7 @@ export const loop = (
     y: carMovingValue.position.y,
   };
 
-  carMovingValue.wheels.forEach((wheel: IWheel) => {
-    const newRotationWheelValue =
-      (newCarPosition.x - carMovingValue.position.x) / pixelsByOneDeg +
-      wheel.rotation;
-
-    if (newRotationWheelValue > 360) {
-      wheel.rotation = newRotationWheelValue - 360;
-    } else {
-      wheel.rotation = newRotationWheelValue;
-    }
-  });
+  settingNewWheelsRadius(carMovingValue, newCarPosition);
 
   carMovingValue.position = newCarPosition;
 

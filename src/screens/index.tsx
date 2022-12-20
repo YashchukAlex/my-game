@@ -58,13 +58,15 @@ export default () => {
   }, [mapMoving, carMoving]);
 
   useEffect(() => {
+    const newCarValue = JSON.parse(JSON.stringify(carMoving.value));
     if (carMovingToolsStatus === ControlMoveCar.MOVING_FORWARD) {
-      carMoving.value.speed = carSpeed;
+      newCarValue.speed = carSpeed;
     } else if (carMovingToolsStatus === ControlMoveCar.MOVING_BACK) {
-      carMoving.value.speed = -carSpeed;
+      newCarValue.speed = -carSpeed;
     } else {
-      carMoving.value.speed = 0;
+      newCarValue.speed = 0;
     }
+    carMoving.value = newCarValue;
   }, [carMoving, carMovingToolsStatus]);
 
   const refreshGame = () => {

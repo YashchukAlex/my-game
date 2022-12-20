@@ -7,7 +7,10 @@ export const cameraPosition = 100;
 //Car
 export const carWidth = 200;
 export const carHeight = carWidth * 0.295;
-export const carPosition: Position = { x: cameraPosition, y: roadHeight / 1.8 };
+export const carPosition: Position = {
+  x: cameraPosition * 2,
+  y: roadHeight / 1.8,
+};
 export const carSpeed = 100;
 export const wheelRadius = carWidth * 0.08;
 export const leftWheelPosition: Position = {
